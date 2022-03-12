@@ -21,7 +21,7 @@ router.get('/', validateSession, getAllUsers)
 
 router.get('/:id', validateSession, getUserById)
 
-router.post('/', validateSession, createNewUser)
+router.post('/', createNewUser)
 
 router.patch('/:id', validateSession, updateUser)
 

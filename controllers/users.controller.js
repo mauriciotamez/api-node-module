@@ -15,8 +15,8 @@ const { AppError } = require('../util/appError')
 dotenv.config({ path: './config.env' })
 
 // Get all users
-exports.getAllUsers = async (req, res) => {
-  try {
+exports.getAllUsers = handleError(
+  async (req, res, next) => {
     const users = await User.findAll({
       where: { status: 'active' },
       attributes: { exclude: ['password'] },
@@ -46,10 +46,8 @@ exports.getAllUsers = async (req, res) => {
       status: 'success',
       data: { users }
     })
-  } catch (error) {
-    console.log(error)
   }
-}
+)
 
 // Get user by ID
 exports.getUserById = handleError(

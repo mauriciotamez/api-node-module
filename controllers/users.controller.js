@@ -19,13 +19,19 @@ exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
       where: { status: 'active' },
+      attributes: { exclude: ['password'] },
       include: [
         {
           model: Post,
           include: [
             {
               model: Comment,
-              include: [{ model: User }]
+              include: [
+                {
+                  model: User,
+                  attributes: { exclude: ['password'] }
+                }
+              ]
             }
           ]
         },
@@ -110,11 +116,11 @@ exports.updateUser = (req, res) => {
   // const userIndex = users.findIndex(user => user.id === +id);
 
   // if (userIndex === -1) {
-  // 	res.status(404).json({
-  // 		status: 'error',
-  // 		message: 'Cant update user, not a valid ID',
-  // 	});
-  // 	return;
+  //  res.status(404).json({
+  //    status: 'error',
+  //    message: 'Cant update user, not a valid ID',
+  //  });
+  //  return;
   // }
 
   // let updatedUser = users[userIndex];
@@ -133,11 +139,11 @@ exports.deleteUser = (req, res) => {
   // const userIndex = users.findIndex(user => user.id === +id);
 
   // if (userIndex === -1) {
-  // 	res.status(404).json({
-  // 		status: 'error',
-  // 		message: 'Cant delete user, invalid ID',
-  // 	});
-  // 	return;
+  //  res.status(404).json({
+  //    status: 'error',
+  //    message: 'Cant delete user, invalid ID',
+  //  });
+  //  return;
   // }
 
   // users.splice(userIndex, 1);

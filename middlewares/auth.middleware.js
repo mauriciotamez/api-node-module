@@ -2,6 +2,9 @@ const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 const { promisify } = require('util')
 
+//Models
+const { User } = require('../models/user.model')
+
 // Utils
 const { AppError } = require('../util/appError')
 const { handleError } = require('../util/handleError')
@@ -23,22 +26,41 @@ exports.validateSession = handleError(
     }
 
     if (!token) {
-      return next(new AppError(400, 'Invalid session.'))
+      return next(new AppError(401, 'Invalid session.'))
     }
 
     console.log(token)
 
     // Verify that token is still valid
-    const validToken = await promisify(jwt.verify)(
+    const decodedToken = await promisify(jwt.verify)(
       token,
       process.env.JWT_SECRET
     )
 
-    if (!validToken) {
+    if (!decodedToken) {
       return next(new AppError(401, 'Invalid session'))
     }
 
     // Validate that the id that the token contains belongs to a valid user
+    const user = await User.findOne({
+      where: {
+        id: decodedToken.id,
+        status: 'active',
+        
+      }, attributes: { exclude: ['password'] }
+    })
+
+    console.log(user)
+
+    if (!user) {
+      return next(
+        new AppError(
+          401,
+          'This user is no longer available.'
+        )
+      )
+    }
+
     // Grant access
     next()
   }
